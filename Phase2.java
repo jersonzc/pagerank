@@ -67,13 +67,15 @@ public class Phase2 extends Configured implements Tool {
 			float sum = 0.0f;
 			for (int i = 0; i < values2.size(); i++) {
 				String value = values2.get(i);
+				System.out.println("value " + value);
 				String[] parts = value.split(":");
 				if (parts.length > 1) {
 					float PR = Float.parseFloat(parts[0]);
 					int links = Integer.parseInt(parts[1]);
+					System.out.println("PR" + PR + "-" + links);
 					sum += (PR / links);
 				} else if (parts.length == 1) {
-					// System.out.printf("(%s, %s)\n", key.toString(), value);
+					System.out.printf("(%s, %s)\n", key.toString(), value);
 					nodesStr = value;
 				}
 			}
@@ -81,7 +83,7 @@ public class Phase2 extends Configured implements Tool {
 			String tmp = Float.toString(newPR);
 			tmp += ":";
 			tmp += nodesStr;
-			// System.out.printf("[%s][%s]", key, tmp);
+			System.out.printf("[%s][%s]", key, tmp);
 			output.collect(key, new Text(tmp));
 		}
 	}
