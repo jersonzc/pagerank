@@ -20,7 +20,23 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
 public class Phase1 extends Configured implements Tool {
+	/*
+	Input:
 
+	A:D
+	B:C
+	C:A
+	D:B
+	C:D
+
+	Output:
+
+	(A, D)
+	(B, C)
+	(C, A)
+	(D, B)
+	(C, D)
+	*/
 	public static class Phase1Mapper extends MapReduceBase implements Mapper<Text, Text, Text, Text> {
 		@Override
 		public void map(Text key, Text value, OutputCollector<Text, Text> output, Reporter reporter) throws IOException {
@@ -28,7 +44,33 @@ public class Phase1 extends Configured implements Tool {
 		}
 	}
 
+
+	/*
+	Input:
+
+	(A, D)
+	(B, C)
+	(C, A)
+	(D, B)
+	(C, D)
+
+	Output:
+
+	(A, (1.0:D))
+	(B, (1.0:C))
+	(C, (1.0:A,D))
+	(D, (1.0:B))
+
+	*/
 	public static class Phase1Reducer extends MapReduceBase implements Reducer<Text, Text, Text, Text> {
+		/*
+			Example:
+
+			(C, A)
+			(C, D)
+
+			values: A,D
+		*/
 		@Override
 		public void reduce(Text key, Iterator<Text> values, OutputCollector<Text, Text> output, Reporter reporter)
 				throws IOException {
@@ -36,12 +78,12 @@ public class Phase1 extends Configured implements Tool {
 			boolean first = true;
 			while (values.hasNext()) {
 				if (!first) {
-					pageRank += ",";
+					pageRank += ","; // "1.0:A,"
 				}
-				pageRank += values.next().toString();
+				pageRank += values.next().toString(); // "1.0:A"   "1.0:A,D"
 				first = false;
 			}
-			output.collect(key, new Text(pageRank));
+			output.collect(key, new Text(pageRank)); // (C, "1.0:A,D")
 		}
 	}
 
