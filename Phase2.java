@@ -23,25 +23,69 @@ import org.apache.hadoop.util.ToolRunner;
 public class Phase2 extends Configured implements Tool {
 
 	public static class Phase2Mapper extends MapReduceBase implements Mapper<Text, Text, Text, Text> {
+		/*
+		Input:
+
+		(A, (1.0:D))
+		(B, (1.0:C))
+		(C, (1.0:A,D))
+		(D, (1.0:B))
+
+		*/
 		@Override
 		public void map(Text key, Text value, OutputCollector<Text, Text> output, Reporter reporter) throws IOException {
-			String[] parts = value.toString().split(":");
+			// Example: (C, (1.0:A,D))
+
+			// SEPARA VALUE Y NODOS
+			String[] parts = value.toString().split(":"); // ["1.0", "A,D"]
 
 			if (parts.length > 1) {
-				String PRStr = parts[0];
-				String nodesStr = parts[1];
-				String[] nodes = nodesStr.split(",");
+				// ALMACENA SOLO EL VALUE
+				String PRStr = parts[0]; // "1.0"
 
-				int count = nodes.length;
+				// ALMACENA SOLO NODOS EN UNA LISTA
+				String nodesStr = parts[1]; // "A,D"
+				String[] nodes = nodesStr.split(","); // ["A", "D"]
+
+				// ALMACENA PAGERANK VALUE Y NÚMERO DE NODOS
+				int count = nodes.length; // numero de nodos = 2
 				for (int i = 0; i < nodes.length; i++) {
-					String tmp = PRStr;
-					tmp += ":";
-					tmp += Integer.toString(count);
-					output.collect(new Text(nodes[i]), new Text(tmp));
-				}
-				output.collect(key, new Text(nodesStr));
+					String tmp = PRStr; // "1.0"
+					tmp += ":"; // "1.0:"
+					tmp += Integer.toString(count); // "1.0:2"
+					output.collect(new Text(nodes[i]), new Text(tmp)); // ("A", "1.0:2")
+				}																										// ("D", "1.0:2")
+				output.collect(key, new Text(nodesStr)); // ("C", "A,D")
 			}
 		}
+		/*
+
+		Example: (C, (1.0:A,D))
+
+		("A", "1.0:2")
+		("D", "1.0:2")
+		("C", "A,D")
+
+		Input:
+
+		(A, (1.0:D))
+		(B, (1.0:C))
+		(C, (1.0:A,D))
+		(D, (1.0:B))
+
+		Output:
+
+		(D, 1:1)
+		(C, 1:1)
+		(A, 1:2)
+		(D, 1:2)
+		(B, 1:1)
+		(A, D)
+		(B, C)
+		(C, AD)
+		(D, B)
+
+		*/
 	}
 
 	/*
