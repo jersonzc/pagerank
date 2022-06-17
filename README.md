@@ -1,5 +1,10 @@
 # PageRank
 
+### Integrantes:
+
+- Zúñiga Coayla, Jerson
+- Chullunquia Rosas, Sharon
+
 ## Phase 1
 
 ### HDFS
