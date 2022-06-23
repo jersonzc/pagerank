@@ -92,10 +92,35 @@ public class Phase2 extends Configured implements Tool {
 	 * Calculating PageRank
 	 */
 	public static class Phase2Reducer extends MapReduceBase implements Reducer<Text, Text, Text, Text> {
+		/*
+		Input:
+		(D, 1:1)
+		(C, 1:1)
+		(A, 1:2)
+		(D, 1:2)
+		(B, 1:1)
+		(A, D)
+		(B, C)
+		(C, AD)
+		(D, B)
+
+		Output:
+		(A, (0.5:D))
+		(B, (1.0:C))
+		(C, (1.0:A,D))
+		(D, (1.425:B))
+		*/
 		@Override
 		public void reduce(Text key, Iterator<Text> values, OutputCollector<Text, Text> output, Reporter reporter)
+		/*
+		key, values:
+		(D, 1:1)
+		(D, 1:2)
+		(D, B)
+		*/
 				throws IOException {
 			// make a copy of values
+			// values2 = <"1.0:1", "1.0:2", "B">
 			ArrayList<String> values2 = new ArrayList<String>();
 			while (values.hasNext()) {
 				String value = values.next().toString();
@@ -110,23 +135,28 @@ public class Phase2 extends Configured implements Tool {
 			float newPR = 0.0f;
 			float sum = 0.0f;
 			for (int i = 0; i < values2.size(); i++) {
-				String value = values2.get(i);
-				String[] parts = value.split(":");
+				String value = values2.get(i); // "1.0:1", // "B"
+				String[] parts = value.split(":"); // ["1.0", "1"] // ["B"]
 				if (parts.length > 1) {
-					float PR = Float.parseFloat(parts[0]);
-					int links = Integer.parseInt(parts[1]);
+					float PR = Float.parseFloat(parts[0]); // 1.0
+					int links = Integer.parseInt(parts[1]); // 1
 					sum += (PR / links);
-				} else if (parts.length == 1) {
-					// System.out.printf("(%s, %s)\n", key.toString(), value);
-					nodesStr = value;
+				} else if (parts.length == 1) { // "B"
+					nodesStr = value; // "B"
 				}
 			}
-			newPR = (sum * damping + (1 - damping)); // updating PageRank
-			String tmp = Float.toString(newPR);
-			tmp += ":";
-			tmp += nodesStr;
-			// System.out.printf("[%s][%s]", key, tmp);
-			output.collect(key, new Text(tmp));
+			newPR = (sum * damping + (1 - damping)); // (1.5*0.85 + (1-0.85)) = 1.425
+			String tmp = Float.toString(newPR); // "1.425"
+			tmp += ":"; // "1.425:"
+			tmp += nodesStr; // "1.425:B"
+			output.collect(key, new Text(tmp)); // (D, "1.425:B")
+			/*
+			Output:
+			(A, (0.5:D))
+			(B, (1.0:C))
+			(C, (1.0:A,D))
+			(D, (1.425:B))
+			*/
 		}
 	}
 
