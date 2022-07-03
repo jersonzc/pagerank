@@ -12,8 +12,8 @@
 Copy [data](./data) to HDFS.
 
 ```sh
-❯ hdfs dfs -mkdir data
-❯ hdfs dfs -put data/* data
+❯ hdfs dfs -mkdir pagerank_input
+❯ hdfs dfs -put data/* pagerank_input
 ```
 
 ### Compile
@@ -30,7 +30,7 @@ Compile and create `Phase1.jar`:
 Submit job:
 
 ```sh
-❯ yarn jar Phase1.jar Phase1 data pagerank_output0
+❯ yarn jar Phase1.jar Phase1 pagerank_input pagerank_output0
 ```
 
 ### Result
