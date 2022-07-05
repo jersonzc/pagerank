@@ -37,10 +37,10 @@ Submit job:
 
 ```sh
 ❯ hdfs dfs -cat pagerank_output0/part-00000
-A	1.0:D
-B	1.0:C
-C	1.0:A,D
-D	1.0:B
+1	1.0:4,3,2
+2	1.0:1
+3	1.0:1
+4	1.0:1
 ```
 
 ## Phase 2
@@ -60,18 +60,19 @@ Submit job:
 
 ```sh
 ❯ yarn jar Phase2.jar Phase2 pagerank_output0 pagerank_output1
+❯ yarn jar Phase2.jar Phase2 pagerank_output1 pagerank_output2
 ```
 
 ### Result
 
 ```sh
-❯ hdfs dfs -cat pagerank_output1/part-00000
-A	0.575:D
-B	1.0:C
-C	1.0:A,D
-D	1.4250001:B
+❯ hdfs dfs -cat pagerank_output2/part-00000
+1	1.255:4,3,2
+2	0.9150001:1
+3	0.9150001:1
+4	0.9150001:1
 ```
 
 The following image shows results on first iteration of PageRank.
 
-![Nodes and weights on PR](./blob/result1.png)
+![Nodes and weights on PR](./blob/result2.png)
