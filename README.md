@@ -75,4 +75,4 @@ Submit job:
 
 The following image shows results on first iteration of PageRank.
 
-![Nodes and weights on PR](./blob/result2.png)
+<img src="https://github.com/jersonzc/pagerank/blob/697cbdd529c7d918ef784bc02f20fe1dcecbaa3b/blob/result2.png" alt="Nodes and weights on PR" width="350">
